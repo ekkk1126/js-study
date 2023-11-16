@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>숫자 야구 게임</title>
+  </head>
+  <body>
+    <form id="form">
+      <input type="text" id="input" />
+      <button>확인</button>
+    </form>
+    <div id="logs"></div>
+  </body>
+  <script>
+    const $input = document.getElementById("input");
+    const $form = document.getElementById("form");
+    const $logs = document.getElementById("logs");
+
+    const answer = new Set();
+    while (answer.size != 4) {
+      const ranNum = Math.floor(Math.random() * 9 + 1);
+      answer.add(ranNum);
+    }
+    console.log(answer);
+
+    const tries = [];
+    function checkInput(input) {
+      if (input.length !== 4) return alert("4자리 숫자를 입력해주세요");
+      if (new Set(input).size !== 4)
+        return alert("중복되지 않게 숫자를 입력해주세요.");
+      if (tries.includes(input)) return alert("이미 시도한 값입니다.");
+      return true;
+    }
+
+    $form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const val = $input.value;
+      console.log(tries);
+      if (!checkInput(val)) {
+        return;
+      }
+      $input.vale = "";
+      tries.push(val);
+      const arr_answer = Array.from(answer).join("");
+      const set_val = new Set(val);
+      const unionSet = new Set([...answer, ...set_val]);
+
+      if (arr_answer === val) {
+        $logs.textContent = "축하합니다.\n홈런입니다!!!";
+        return;
+      }
+
+      if (tries.length > 10) {
+        $logs.textContent = `틀렸습니다. 정답은 ${answer.join("")} 입니다.`;
+        return;
+      }
+
+      // 스트라이크/ 볼 / 아웃 검사
+      let strike = 0;
+      let ball = 0;
+      let out = 0;
+      for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+          if (arr_answer[i] === val[j]) {
+            if (i == j) strike++;
+            else ball++;
+          }
+        }
+      }
+
+      if (strike == 0 && ball == 0) {
+        out += 1;
+        $logs.textContent = `${val} -> ${strike}스트라이크 / ${ball} 볼 / ${out} 아웃`;
+        if (out == 3) return ($logs.append = "삼진아웃!");
+      } else {
+        $logs.innerHTML = `${val} -> ${strike}스트라이크 / ${ball} 볼 / ${out} 아웃`;
+      }
+    });
+  </script>
+</html>
