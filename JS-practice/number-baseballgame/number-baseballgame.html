@@ -17,6 +17,7 @@
     const $form = document.getElementById("form");
     const $logs = document.getElementById("logs");
 
+    // 램덤 수 (정답) 생성
     const answer = new Set();
     while (answer.size != 4) {
       const ranNum = Math.floor(Math.random() * 9 + 1);
@@ -24,42 +25,44 @@
     }
     console.log(answer);
 
+    // 정답 형식 체크
     const tries = [];
     function checkInput(input) {
       if (input.length !== 4) return alert("4자리 숫자를 입력해주세요");
       if (new Set(input).size !== 4)
         return alert("중복되지 않게 숫자를 입력해주세요.");
-      if (tries.includes(input)) return alert("이미 시도한 값입니다.");
+      if (tries.includes(input)) alert("이미 시도한 값입니다.");
       return true;
     }
 
+    let out = 0;
     $form.addEventListener("submit", (event) => {
       event.preventDefault();
       const val = $input.value;
-      console.log(tries);
       if (!checkInput(val)) {
         return;
       }
-      $input.vale = "";
+      $input.value = "";
       tries.push(val);
       const arr_answer = Array.from(answer).join("");
       const set_val = new Set(val);
       const unionSet = new Set([...answer, ...set_val]);
 
+      // 정답일 경우
       if (arr_answer === val) {
         $logs.textContent = "축하합니다.\n홈런입니다!!!";
         return;
       }
 
-      if (tries.length > 10) {
-        $logs.textContent = `틀렸습니다. 정답은 ${answer.join("")} 입니다.`;
+      // 10번 시도 초과
+      if (tries.length > 9) {
+        $logs.textContent = `틀렸습니다. 정답은 ${arr_answer} 입니다.`;
         return;
       }
 
       // 스트라이크/ 볼 / 아웃 검사
       let strike = 0;
       let ball = 0;
-      let out = 0;
       for (let i = 0; i < 4; i++) {
         for (let j = 0; j < 4; j++) {
           if (arr_answer[i] === val[j]) {
@@ -68,13 +71,19 @@
           }
         }
       }
-
-      if (strike == 0 && ball == 0) {
-        out += 1;
-        $logs.textContent = `${val} -> ${strike}스트라이크 / ${ball} 볼 / ${out} 아웃`;
-        if (out == 3) return ($logs.append = "삼진아웃!");
+      console.log(strike, ball, out, 1);
+      if (strike === 0 && ball === 0) {
+        out++;
+        $logs.append(
+          `${val} -> ${strike} 스트라이크 / ${ball} 볼 / ${out} 아웃`,
+          document.createElement("br")
+        );
+        if (out === 3) return ($logs.textContent = "삼진아웃!");
       } else {
-        $logs.innerHTML = `${val} -> ${strike}스트라이크 / ${ball} 볼 / ${out} 아웃`;
+        $logs.append(
+          `${val} -> ${strike} 스트라이크 / ${ball} 볼 / ${out} 아웃`,
+          document.createElement("br")
+        );
       }
     });
   </script>
